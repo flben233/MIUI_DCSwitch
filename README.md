@@ -1,6 +1,11 @@
 # MIUI_DCSwitch
 用于同时开启MIUI的DC调光和高刷新率的小工具
 
+下载地址：
+
+[蓝奏云镜像](https://wwqx.lanzoul.com/ijaHN0is2fhg)
+
+
 ## 功能介绍
 强制开启DC调光，无视刷新率的限制，即允许高刷和DC调光共存
 
