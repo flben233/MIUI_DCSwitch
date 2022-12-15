@@ -1,5 +1,6 @@
 # MIUI_DCSwitch
 用于同时开启MIUI的DC调光和高刷新率的小工具
+
 A tool to turn on AntiFlickerMode and high fresh rate at the same time.
 
 下载地址/Download：
@@ -11,6 +12,7 @@ A tool to turn on AntiFlickerMode and high fresh rate at the same time.
 
 ## 功能介绍/Function
 强制开启DC调光，无视刷新率的限制，即允许高刷和DC调光共存
+
 Turn on AntiFlickerMode forcedly.
 
 ## 使用方法/How to use
