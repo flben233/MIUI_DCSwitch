@@ -32,3 +32,4 @@ This appplication only test successfully in my MIX4 and the MIUI version is V14.
 
 ## 软件截图/Snapshot
 ![1671121239133.jpg](https://res.shirakawatyu.top/e567363f858a443da31425b492bcd7a9.jpg)
+![1671172209655.jpg](https://res.shirakawatyu.top/52aebecf1eae48d5ae58298a62d0639c.jpg)
