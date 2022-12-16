@@ -9,7 +9,7 @@ public class SELinuxUtil {
     public static boolean checkStatus() {
         Process getEnforce = null;
         try {
-            getEnforce = Runtime.getRuntime().exec("getenforce");
+            getEnforce = Runtime.getRuntime().exec("su -c getenforce");
             BufferedInputStream inputStream = new BufferedInputStream(getEnforce.getInputStream());
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             String result = reader.readLine().trim();
