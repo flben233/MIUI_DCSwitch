@@ -1,15 +1,34 @@
 # MIUI_DCSwitch
 用于同时开启MIUI的DC调光和高刷新率的小工具
 
-## 背景介绍
-因为最近更新了2.16版本(虽然我知道已经到2.21了但是懒得更)的MIUI13导致原来的省电模式卡高刷新率dc的办法用不了了，虽然又可以通过自动任务卡高刷新率dc，但是总觉得很不爽，于是开始逆向miui的源码……(不写了，如果有人想看我再单独开贴)
-总之，我弄了个软件，现在可以通过这个软件伪装60hz然后开启dc调光，因为我学的是javaweb，所以基本上不会做android的界面...
+A tool to turn on AntiFlickerMode and high fresh rate at the same time.
 
-## 使用方法
+下载地址/Download：
+
+[蓝奏云镜像](https://wwqx.lanzoul.com/ijaHN0is2fhg)
+
+[Github](https://github.com/flben233/MIUI_DCSwitch/releases/download/2.0/app-release.apk)
+
+
+## 功能介绍/Function
+强制开启DC调光，无视刷新率的限制，即允许高刷和DC调光共存
+
+Turn on AntiFlickerMode forcedly.
+
+## 使用方法/How to use
 
 ***********需ROOT权限运行***********
 
-打开本软件，然后点击第一个按钮，授予root权限，然后打开防闪烁模式，最后回到本软件然后点击第二个按钮，结束~
+打开本软件，授予Root权限，根据需求点击按钮即可，非常方便
 
-## 注意事项
-本程序仅在我的MIX4测试通过，MIUI版本为22.2.16
+***********Need Root Permission***********
+
+1. Run the application and authorize root permissions.
+2. Click the first button to turn on or click the second button to turn off.
+## 注意事项/Warning
+本程序仅在我的MIX4测试通过，MIUI版本为V14.0.22.12.5.DEV
+
+This appplication only test successfully in my MIX4 and the MIUI version is V14.0.22.12.5.DEV.
+
+## 软件截图/Snapshot
+![1671121239133.jpg](https://res.shirakawatyu.top/e567363f858a443da31425b492bcd7a9.jpg)
