@@ -3,13 +3,8 @@ package org.shirakawatyu.dc;
 import java.lang.reflect.Method;
 
 public class DisplayUtil {
-    public static boolean setAntiFlickMode(boolean status) {
-        boolean flag = false;
+    public static boolean setAntiFlickMode(boolean status, boolean selinux) {
         try {
-            if (SELinuxUtil.checkStatus()) {
-                SELinuxUtil.setStatus(false);
-                flag = true;
-            }
             Class<?> hardware = Class.forName("miui.hardware.display.DisplayFeatureManager");
             Method getInstance = hardware.getDeclaredMethod("getInstance");
             getInstance.setAccessible(true);
@@ -23,7 +18,7 @@ public class DisplayUtil {
                 setScreenEffect.invoke(o, 20, 0);
                 Runtime.getRuntime().exec("su -c settings put system dc_back_light 0");
             }
-            if (flag) {
+            if (selinux) {
                 SELinuxUtil.setStatus(true);
             }
             return true;

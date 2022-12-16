@@ -25,9 +25,9 @@ public class SELinuxUtil {
     public static boolean setStatus(boolean status) {
         try {
             if (status) {
-                Runtime.getRuntime().exec("su -c setenforce 0");
-            } else {
                 Runtime.getRuntime().exec("su -c setenforce 1");
+            } else {
+                Runtime.getRuntime().exec("su -c setenforce 0");
             }
             return true;
         }catch (IOException e) {

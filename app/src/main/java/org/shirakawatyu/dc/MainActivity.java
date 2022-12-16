@@ -1,9 +1,12 @@
 package org.shirakawatyu.dc;
 
+import android.content.Context;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import org.shirakawatyu.dc.entity.Status;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -14,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Status status = new Status();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (!checkRoot()) {
@@ -21,17 +25,9 @@ public class MainActivity extends AppCompatActivity {
             System.exit(0);
         }
         Button bt = findViewById(R.id.button);
-        bt.setOnClickListener(view -> {
-            boolean b = DisplayUtil.setAntiFlickMode(true);
-            if (!b) Toast.makeText(getApplicationContext(), "开启失败", Toast.LENGTH_SHORT).show();
-            else Toast.makeText(getApplicationContext(), "开启成功", Toast.LENGTH_SHORT).show();
-        });
+        bt.setOnClickListener(view -> simpleSetAntiFlickerMode(getApplicationContext(), status, true));
         Button bt2 = findViewById(R.id.button2);
-        bt2.setOnClickListener(view -> {
-            boolean b = DisplayUtil.setAntiFlickMode(false);
-            if (!b) Toast.makeText(getApplicationContext(), "关闭失败", Toast.LENGTH_SHORT).show();
-            else Toast.makeText(getApplicationContext(), "关闭成功", Toast.LENGTH_SHORT).show();
-        });
+        bt2.setOnClickListener(view -> simpleSetAntiFlickerMode(getApplicationContext(), status, false));
     }
 
     private static boolean checkRoot() {
@@ -47,5 +43,17 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return true;
+    }
+
+    private static void simpleSetAntiFlickerMode(Context context, Status status, boolean mode) {
+        if (SELinuxUtil.checkStatus()) {
+            SELinuxUtil.setStatus(false);
+            status.setLastSELinuxStatus(true);
+            simpleSetAntiFlickerMode(context, status, mode);
+        } else {
+            boolean b = DisplayUtil.setAntiFlickMode(mode, status.getLastSELinuxStatus());
+            if (!b) Toast.makeText(context, "失败", Toast.LENGTH_SHORT).show();
+            else Toast.makeText(context, "成功", Toast.LENGTH_SHORT).show();
+        }
     }
 }
