@@ -3,14 +3,18 @@ package org.shirakawatyu.dc;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.*;
+import android.provider.Settings;
 import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import org.shirakawatyu.dc.entity.Status;
+import org.shirakawatyu.dc.util.CommandUtil;
 import org.shirakawatyu.dc.util.DisplayUtil;
 import org.shirakawatyu.dc.util.SharedPreferencesUtil;
 import java.util.logging.Level;
@@ -26,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Status status = new Status();
+        autoObtainLocationPermission();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         SharedPreferences dcPreferences = getSharedPreferences("dc", MODE_PRIVATE);
@@ -48,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferencesUtil.putBoolean(this, "dc", "disableDynamicFreshRate", sw.isChecked());
             if (sw.isChecked()) {
                 initNotification();
-                initBroadcastReceiver(status);
+                initBroadcastReceiver();
                 Toast.makeText(this, "启用常驻服务", Toast.LENGTH_SHORT).show();
             } else {
                 NotificationManagerCompat.from(this).cancel(NOTIFICATION_ID);
@@ -56,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         });
         if (dcPreferences.getBoolean("disableDynamicFreshRate", false)) {
             initNotification();
-            if (!register) initBroadcastReceiver(status);
+            if (!register) initBroadcastReceiver();
             sw.setChecked(true);
         }
     }
@@ -76,23 +81,35 @@ public class MainActivity extends AppCompatActivity {
         manager.notify(NOTIFICATION_ID, builder.build());
     }
 
-    private void initBroadcastReceiver(Status status) {
+    private void initBroadcastReceiver() {
+        if (register) return;
         final IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_ON);
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                int mode = 0;
+                String speedMode = CommandUtil.execString("su -c settings get system speed_mode");
+                if (speedMode != null){
+                    mode = Integer.parseInt(speedMode);
+                }
                 Logger.getLogger("Broadcast").log(Level.INFO, "屏幕开启");
-                DisplayUtil.simpleSetAntiFlickerMode(context, status, false, false);
+                CommandUtil.exec("su -c settings put system speed_mode " + (1 - mode));
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                DisplayUtil.simpleSetAntiFlickerMode(context, status, true, false);
+                CommandUtil.exec("su -c settings put system speed_mode " + mode);
             }
         };
         registerReceiver(receiver, filter);
         register = true;
+    }
+
+    private void autoObtainLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, "android.permission.WRITE_SETTINGS") != 0) {
+            ActivityCompat.requestPermissions(this, new String[] { "android.permission.WRITE_SETTINGS" }, 1);
+        }
     }
 }
