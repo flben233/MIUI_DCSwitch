@@ -2,4 +2,5 @@
     <string name="app_name">DC开关</string>
     <string name="btn_on">开启防闪烁模式</string>
     <string name="btn_off">关闭防闪烁模式</string>
+    <string name="disableDFR">禁用系统动态刷新率(需要常驻后台)</string>
 </resources>

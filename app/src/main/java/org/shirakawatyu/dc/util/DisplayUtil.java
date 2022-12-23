@@ -34,26 +34,31 @@ public class DisplayUtil {
     }
 
     public static void simpleSetAntiFlickerMode(Context context, Status status, boolean mode) {
+        simpleSetAntiFlickerMode(context, status, mode, true);
+    }
+    public static void simpleSetAntiFlickerMode(Context context, Status status, boolean mode, boolean showToast) {
         if (SELinuxUtil.checkStatus()) {
             SELinuxUtil.setStatus(false);
             status.setLastSELinuxStatus(true);
-            simpleSetAntiFlickerMode(context, status, mode);
+            simpleSetAntiFlickerMode(context, status, mode, showToast);
         } else {
             boolean b = setAntiFlickMode(mode, status.getLastSELinuxStatus());
-            if (!b) Toast.makeText(context, "失败", Toast.LENGTH_SHORT).show();
+            if (showToast && !b) Toast.makeText(context, "失败", Toast.LENGTH_SHORT).show();
             else {
-                SharedPreferences.Editor edit = context.getSharedPreferences("dc", Context.MODE_PRIVATE).edit();
-                edit.putBoolean("dcStatus", mode);
-                edit.apply();
-                Toast.makeText(context, "成功", Toast.LENGTH_SHORT).show();
+//                SharedPreferences.Editor edit = context.getSharedPreferences("dc", Context.MODE_PRIVATE).edit();
+//                edit.putBoolean("dcStatus", mode);
+//                edit.apply();
+                SharedPreferencesUtil.putBoolean(context, "dc", "dcStatus", mode);
+                if (showToast) Toast.makeText(context, "成功", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     public static void initDcStatus(Context context) {
-        SharedPreferences.Editor edit = context.getSharedPreferences("dc", Context.MODE_PRIVATE).edit();
         String s = CommandUtil.execString("su -c settings get system dc_back_light");
-        edit.putBoolean("dcStatus", "1".equals(s));
-        edit.apply();
+        SharedPreferencesUtil.putBoolean(context, "dc", "dcStatus", "1".equals(s));
+//        SharedPreferences.Editor edit = context.getSharedPreferences("dc", Context.MODE_PRIVATE).edit();
+//        edit.putBoolean("dcStatus", "1".equals(s));
+//        edit.apply();
     }
 }
