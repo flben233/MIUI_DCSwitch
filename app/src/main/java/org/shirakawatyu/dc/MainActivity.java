@@ -14,6 +14,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import org.shirakawatyu.dc.entity.Status;
+import org.shirakawatyu.dc.service.DisableDynamicFreshRateService;
 import org.shirakawatyu.dc.util.CommandUtil;
 import org.shirakawatyu.dc.util.DisplayUtil;
 import org.shirakawatyu.dc.util.SharedPreferencesUtil;
@@ -23,14 +24,12 @@ import static org.shirakawatyu.dc.util.RootUtil.checkRoot;
 import static org.shirakawatyu.dc.util.DisplayUtil.simpleSetAntiFlickerMode;
 
 public class MainActivity extends AppCompatActivity {
-    private final String CHANNEL_ID = "org.shirakawatyu.dc";
-    private final int NOTIFICATION_ID = 233;
+
     private boolean register = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Status status = new Status();
-        autoObtainLocationPermission();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         SharedPreferences dcPreferences = getSharedPreferences("dc", MODE_PRIVATE);
@@ -52,64 +51,16 @@ public class MainActivity extends AppCompatActivity {
         sw.setOnClickListener((view) -> {
             SharedPreferencesUtil.putBoolean(this, "dc", "disableDynamicFreshRate", sw.isChecked());
             if (sw.isChecked()) {
-                initNotification();
-                initBroadcastReceiver();
+                startForegroundService(new Intent(this, DisableDynamicFreshRateService.class));
                 Toast.makeText(this, "启用常驻服务", Toast.LENGTH_SHORT).show();
             } else {
-                NotificationManagerCompat.from(this).cancel(NOTIFICATION_ID);
+                stopService(new Intent(this, DisableDynamicFreshRateService.class));
             }
         });
         if (dcPreferences.getBoolean("disableDynamicFreshRate", false)) {
-            initNotification();
-            if (!register) initBroadcastReceiver();
+            startForegroundService(new Intent(this, DisableDynamicFreshRateService.class));
             sw.setChecked(true);
         }
     }
 
-    private void initNotification() {
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "dc", NotificationManager.IMPORTANCE_LOW);
-        channel.setDescription("DC Switch Service");
-        NotificationManager manager = getSystemService(NotificationManager.class);
-        manager.createNotificationChannel(channel);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                .setSmallIcon(R.drawable.icon_line)
-                .setContentTitle("DC开关")
-                .setContentText("DC开关常驻服务")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setNotificationSilent()
-                .setOngoing(true);
-        manager.notify(NOTIFICATION_ID, builder.build());
-    }
-
-    private void initBroadcastReceiver() {
-        if (register) return;
-        final IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_SCREEN_ON);
-        BroadcastReceiver receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                int mode = 0;
-                String speedMode = CommandUtil.execString("su -c settings get system speed_mode");
-                if (speedMode != null){
-                    mode = Integer.parseInt(speedMode);
-                }
-                Logger.getLogger("Broadcast").log(Level.INFO, "屏幕开启");
-                CommandUtil.exec("su -c settings put system speed_mode " + (1 - mode));
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                CommandUtil.exec("su -c settings put system speed_mode " + mode);
-            }
-        };
-        registerReceiver(receiver, filter);
-        register = true;
-    }
-
-    private void autoObtainLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, "android.permission.WRITE_SETTINGS") != 0) {
-            ActivityCompat.requestPermissions(this, new String[] { "android.permission.WRITE_SETTINGS" }, 1);
-        }
-    }
 }

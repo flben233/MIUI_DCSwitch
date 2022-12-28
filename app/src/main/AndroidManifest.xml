@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="org.shirakawatyu.dc">
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <application
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher_foreground"
@@ -25,6 +25,12 @@
                 android:permission="android.permission.BIND_QUICK_SETTINGS_TILE" android:exported="true">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE"/>
+            </intent-filter>
+        </service>
+        <service android:name=".service.DisableDynamicFreshRateService" android:exported="true"
+                 android:permission="android.permission.FOREGROUND_SERVICE">
+            <intent-filter>
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE"/>
             </intent-filter>
         </service>
     </application>
